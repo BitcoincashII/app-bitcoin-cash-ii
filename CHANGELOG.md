@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.8] - 2025-08-08
+
+### Fixed
+- Adaptation to IO revamp changes.
+
 ## [2.1.0](https://github.com/ledgerhq/app-bitcoin/compare/1.6.1...1.6.2) - 2022-09-15
 
 Rename the "bitcoin" target to "bitcoin_legacy".
