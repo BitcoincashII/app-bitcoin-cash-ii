@@ -5,11 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.4.10] - 2025-11-07
+## [2.4.10] - 2026-02-19
 
 ### Modified
 
-- Ticker moved on the right
+- Derivation Path Hardening:
+    - `HAVE_APPLICATION_FLAG_DERIVE_MASTER` is removed for all coins except Bitcoin Legacy and Bitcoin Test Legacy
+    - BIP-32 derivation paths are enforced using wildcard syntax (`m/*/<COIN_TYPE>`), with a few exceptions for Bitcoin forks
+- Ticker moved on the right.
 
 ## [2.4.9] - 2025-09-08
 
