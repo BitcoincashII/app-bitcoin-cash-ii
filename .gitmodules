@@ -1,3 +1,4 @@
 [submodule "lib-app-bitcoin"]
 	path = lib-app-bitcoin
-	url = git@github.com:LedgerHQ/lib-app-bitcoin.git
+	url = git@github.com:BitcoincashII/lib-app-bitcoin.git
+	branch = bch2
