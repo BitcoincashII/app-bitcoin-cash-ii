@@ -1,29 +1,60 @@
-# Ledger Legacy Bitcoin Application
+# Ledger Bitcoin Cash II Application
 
-## Legacy bitcoin application
-Bitcoin wallet application for Ledger devices up to version 1.6.5.
+Ledger device application for Bitcoin Cash II (BCH2).
 
-> **Warning**
-> This is currently only used in order to support and maintain altcoins cloned from Bitcoin.
-> The last stable version of the app as it was used for Bitcoin is kept in the branch [legacy-1.6.6](https://github.com/LedgerHQ/app-bitcoin/tree/legacy-1.6.6) for future reference and does not support devices starting Stax.
->
-> Versions starting from 2.0.0 are at https://github.com/LedgerHQ/app-bitcoin.
+This is a clone of Ledger's [app-bitcoin-legacy](https://github.com/LedgerHQ/app-bitcoin-legacy),
+adding Bitcoin Cash II as a coin variant. BCH2 is a Bitcoin Cash protocol chain: it uses the
+same `SIGHASH_FORKID` (BIP-143) signing scheme, CashAddr addresses, and P2PKH/P2SH script types
+as Bitcoin Cash, with its own CashAddr prefix and application identity.
 
-Ledger Blue is not maintained anymore, but the app can still be compiled for this target using the branch `blue-final-release`.
+## Changes from app-bitcoin-legacy
 
-The original beta specification can be found at https://ledgerhq.github.io/btchip-doc/bitcoin-technical-beta.html - with the regular set of APDUs for standard wallet operations enabled.
+The diff against upstream is intentionally small so it can be reviewed quickly:
 
-## How to use
+- **Makefile** — a `bitcoin_cash_ii` variant: BIP-44 coin type 145, P2PKH version 0, P2SH version 5,
+  `COIN_KIND_BITCOIN_CASH_II`, and `COIN_CASHADDR_PREFIX="bitcoincashii"`.
+- **[lib-app-bitcoin](https://github.com/BitcoincashII/lib-app-bitcoin) (branch `bch2`)** — adds the
+  `COIN_KIND_BITCOIN_CASH_II` coin kind, which reuses Bitcoin Cash's forkId signing and CashAddr
+  display paths, and parameterizes the CashAddr prefix (defaulting to `bitcoincash`, so upstream
+  behaviour is unchanged).
+- **Icons** — Bitcoin Cash II device icons and glyphs.
 
-This application adheres with Ledger latest application guidelines.
+BCH2 does not use SegWit. As with the Bitcoin Cash application, the app's internal "segwit" code path
+is the BIP-143 sighash machinery used to compute the forkId signature; the transactions it produces
+are standard non-SegWit P2PKH.
 
-You can refer to [app-boilerplate Quick start guide](https://github.com/LedgerHQ/app-boilerplate/blob/master/README.md#quick-start-guide) for comprehensive up-to-date instructions.
+## Parameters
+
+| | |
+|---|---|
+| Ticker | BCH2 |
+| BIP-44 coin type | 145 |
+| Derivation | `m/44'/145'` |
+| Address format | CashAddr (`bitcoincashii:`) and legacy Base58 |
+| Signing | ECDSA, `SIGHASH_ALL \| SIGHASH_FORKID` (0x41) |
+
+## Build
+
+```
+BOLOS_SDK=$NANOSP_SDK make COIN=bitcoin_cash_ii
+```
+
+Substitute `$NANOX_SDK`, `$STAX_SDK`, `$FLEX_SDK`, or `$APEX_P_SDK` for other devices. The
+[ledger-app-builder](https://github.com/LedgerHQ/ledger-app-builder) Docker image provides the SDKs.
+
+## Tests
+
+Functional tests use the [Speculos](https://github.com/LedgerHQ/speculos) emulator through the Ragger
+framework. See [tests/README.md](tests/README.md).
 
 ## Are you developing a Ledger device application?
-- See the developers’ documentation on the [Developer Portal](https://developers.ledger.com/)
-- [Go on Discord](https://developers.ledger.com/discord-pro/) to chat with developer support and the developer community.
+
+- See the developers' documentation on the [Developer Portal](https://developers.ledger.com/)
+- [Go on Discord](https://developers.ledger.com/discord-pro/) to chat with developer support and the
+  developer community.
 
 ## Client Library
+
 Include the necessary headers (copied from the js/ directory) in your web page
 
 ```html
@@ -51,11 +82,7 @@ var tx2 = dongle.splitTransaction("...")
 
 To sign a transaction involving standard (P2PKH) inputs, call createPaymentTransactionNew_async with the folowing parameters
 
- - `inputs` is an array of [ transaction, output_index, optional redeem script, optional sequence ] where
-   - transaction is the previously computed transaction object for this UTXO
-   - output_index is the output in the transaction used as input for this UTXO (counting from 0)
-   - redeem script is the optional redeem script to use when consuming a Segregated Witness input
-   - sequence is the sequence number to use for this input (when using RBF), or non present
+ - `inputs` is an array of [ transaction, output_index, optional redeem script, optional sequence ]
  - `associatedKeysets` is an array of BIP 32 paths pointing to the path to the private key used for each UTXO
  - `changePath` is an optional BIP 32 path pointing to the path to the public key used to compute the change address
  - `outputScript` is the hexadecimal serialized outputs of the transaction to sign
@@ -74,28 +101,3 @@ dongle.createPaymentTransactionNew_async(
      function(error) { console.log(error); });
 );
 ```
-
-To obtain the signature of multisignature (P2SH) inputs, call signP2SHTransaction_async with the folowing parameters
-
- - `inputs` is an array of [ transaction, output_index, redeem script, optional sequence ] where
-   - transaction is the previously computed transaction object for this UTXO
-   - output_index is the output in the transaction used as input for this UTXO (counting from 0)
-   - redeem script is the mandatory redeem script associated to the current P2SH input
-   - sequence is the sequence number to use for this input (when using RBF), or non present
- - `associatedKeysets` is an array of BIP 32 paths pointing to the path to the private key used for each UTXO
- - `outputScript` is the hexadecimal serialized outputs of the transaction to sign
- - `lockTime` is the optional lockTime of the transaction to sign, or default (0)
- - `sigHashType` is the hash type of the transaction to sign, or default (all)
-
-This method returns the signed transaction ready to be broadcast
-
-```javascript
-dongle.signP2SHTransaction_async(
-   [ [tx, 1, "52210289b4a3ad52a919abd2bdd6920d8a6879b1e788c38aa76f0440a6f32a9f1996d02103a3393b1439d1693b063482c04bd40142db97bdf139eedd1b51ffb7070a37eac321030b9a409a1e476b0d5d17b804fcdb81cf30f9b99c6f3ae1178206e08bc500639853ae"] ],
-   ["0'/0/0"],
-   "01905f0100000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88ac").then(
-     function(result) { console.log(result);}).fail(
-     function(error) { console.log(error); });
-);
-```
-

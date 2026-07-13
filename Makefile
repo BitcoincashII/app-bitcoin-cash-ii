@@ -27,7 +27,7 @@ APPVERSION_P = 11
 APPDEVELOPPER="Ledger"
 APPCOPYRIGHT="(c) 2024 Ledger"
 
-VARIANT_VALUES = bitcoin_testnet_legacy bitcoin_legacy bitcoin_cash bitcoin_gold litecoin dogecoin dash horizen komodo stratis peercoin pivx viacoin vertcoin digibyte bitcoin_private firo gamecredits zclassic nix lbry ravencoin hydra hydra_testnet xrhodium
+VARIANT_VALUES = bitcoin_testnet_legacy bitcoin_legacy bitcoin_cash bitcoin_cash_ii bitcoin_gold litecoin dogecoin dash horizen komodo stratis peercoin pivx viacoin vertcoin digibyte bitcoin_private firo gamecredits zclassic nix lbry ravencoin hydra hydra_testnet xrhodium
 
 # Application source files
 # There is no additional sources for bitcoin
@@ -88,6 +88,24 @@ COIN_COINID_SHORT=\"BCH\"
 COIN_KIND=COIN_KIND_BITCOIN_CASH
 COIN_FORKID=0
 APPNAME ="Bitcoin Cash"
+PATH_APP_LOAD_PARAMS = "*/145'" "*/0'" "4541509'" "45'"
+
+else ifeq ($(COIN),bitcoin_cash_ii)
+# Bitcoin Cash II
+# Fork of the BC2 chain following Bitcoin Cash protocol rules; same forkId signing
+# scheme as Bitcoin Cash, CashAddr HRP "bitcoincashii"
+BIP44_COIN_TYPE=145
+BIP44_COIN_TYPE_2=0
+COIN_P2PKH_VERSION=0
+COIN_P2SH_VERSION=5
+COIN_FAMILY=1
+COIN_COINID=\"Bitcoin\"
+COIN_COINID_NAME="Bitcoin Cash II"
+COIN_COINID_SHORT=\"BCH2\"
+COIN_KIND=COIN_KIND_BITCOIN_CASH_II
+COIN_FORKID=0
+COIN_CASHADDR_PREFIX=\"bitcoincashii\"
+APPNAME ="Bitcoin Cash II"
 PATH_APP_LOAD_PARAMS = "*/145'" "*/0'" "4541509'" "45'"
 
 else ifeq ($(COIN),bitcoin_gold)
